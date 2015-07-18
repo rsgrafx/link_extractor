@@ -29,9 +29,11 @@ defmodule LinkExtractor.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [ 
-      {:poolboy, "~> 1.2.1"},
+      {:poolboy, "~> 1.4"},
       {:httpoison, "~> 0.7"},
       {:hackney, "~> 1.0"}
     ]
   end
 end
+
+
