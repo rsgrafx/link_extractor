@@ -15,7 +15,7 @@ defmodule LinkExtractor.Mixfile do
   # Type `mix help compile.app` for more information
   def application do
     [applications: [:logger, :httpoison],
-     mod: {LinkExtractor, []}]
+     mod: {LinkExtractor, []}, registered: [:collector]]
   end
 
   # Dependencies can be Hex packages:
