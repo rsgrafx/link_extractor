@@ -29,7 +29,8 @@ defmodule LinkExtractor.Worker do
     |> Enum.map( fn link -> 
       Agent.update(:collector, &([link|&1]))
     end)
-    {:noreply, state}
+    {:reply, %{site: link} }
+    # {:noreply, state}
   end
 
   defp add_title(link = %Link{ url: url } ) do 
