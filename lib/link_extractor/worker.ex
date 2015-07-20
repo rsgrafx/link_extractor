@@ -33,11 +33,27 @@ defmodule LinkExtractor.Worker do
   end
 
   defp add_title(link = %Link{ url: url } ) do 
-    
     title_pattern = ~r"<title>([^<]*)</title>"
-    {:ok, %HTTPoison.Response{ body: body}} = HTTPoison.get(url)
+    body = get_body( url )
     title = Regex.run(title_pattern, body) 
             |> Enum.at(1)
     %Link{ link | title: title  }
   end
+
+  defp get_body(url) do
+    response = HTTPoison.get(url)
+    {:ok, %HTTPoison.Response{body: body}} = follow_redirects(response)
+    # {:ok, %HTTPoison.Response{ body: body}} = follow_redirects(response)
+    body
+  end
+
+  defp follow_redirects(response={:ok, %HTTPoison.Response{status_code: 200}}) do 
+    response
+  end
+
+  defp follow_redirects(response={:ok, %HTTPoison.Response{status_code: 301, headers: %{"Location" => location}}}) do
+    response = HTTPoison.get(location)
+    follow_redirects(response)
+  end
+  
 end  

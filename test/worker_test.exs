@@ -13,5 +13,8 @@ defmodule WorkerTest do
     assert LinkExtractor.Worker.extract_links(@message) == [@expected_link]
   end
 
+  test "status 301" do 
+    
+  end
 
 end
