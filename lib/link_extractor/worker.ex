@@ -51,7 +51,8 @@ defmodule LinkExtractor.Worker do
     response
   end
 
-  defp follow_redirects(response={:ok, %HTTPoison.Response{status_code: 301, headers: %{"Location" => location}}}) do
+  defp follow_redirects({:ok, %HTTPoison.Response{status_code: 301, headers: header_list }}) do
+    {"Location", location}= List.keyfind(header_list, "Location", 0)
     response = HTTPoison.get(location)
     follow_redirects(response)
   end
