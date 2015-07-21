@@ -3,6 +3,8 @@ defmodule LinkExtractor.Worker do
 
   alias LinkExtractor.LinkHandler, as: Handler
   alias LinkExtractor.Link
+  alias LinkExtractor.Coordinator
+
   @url_regex ~r(https?://[^ $\n]*)
 
   def start_link(_options) do
@@ -32,10 +34,18 @@ defmodule LinkExtractor.Worker do
   end
 
   def handle_call({:handle_message, message}, _from, state) do
-    extract_links(message)
-    |> Enum.map(fn link ->
-      spawn(LinkExtractor, :handle_link, [link])
-    end)
+    links = extract_links(message)
+    coord_pid = spawn( Coordinator, :loop, [[], Enum.count( links )])
+
+    links |> Enum.map( fn link -> 
+      worker_pid = spawn(LinkExtractor, :handle_link, [link])
+      send( worker_pid, { coord_pid, link } )
+    end )
+
+    # |> Enum.map(fn link ->
+    #   spawn(LinkExtractor, :handle_link, [link])
+    # end)
+
     {:reply, :ok, state}
   end
 
